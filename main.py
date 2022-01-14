@@ -1,7 +1,5 @@
 import os
 import random
-from timeit import repeat
-from typing import OrderedDict
 
 scores = {"player" : 0, "cpu" : 0, "player1" : 0, "player2" : 0}
 
