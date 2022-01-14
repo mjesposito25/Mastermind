@@ -1,26 +1,16 @@
 import os
 import random
-from timeit import repeat
-from typing import OrderedDict
 
 scores = {"player" : 0, "cpu" : 0, "player1" : 0, "player2" : 0}
 
 def main():
     clear()
     print("Welcome to Mastermind - Py Edition")
-    selection = int(input("1 - Player vs. CPU \n2 - Player vs. Player \n3 - Rules \n4 - Quit\n"))
+    selection = int(input("1 - Player vs. CPU \n2 - Player vs. Player \n4 - Quit\n"))
     if selection == 1:
         gameScores(mode = 'pvc')
     elif selection == 2:
         gameScores(mode = 'pvp')
-    elif selection == 3:
-        printRules()
-
-def printRules():
-    print("\nRules:")
-    print(15*"=")
-    print("Feedback:\nwhite - correct color \nblack - correct placement and color")
-    main()
 
 def gameScores(mode):
     while True:
@@ -30,24 +20,25 @@ def gameScores(mode):
         play = input("Play? [y/n]:")
         if play == 'y':
             if mode == "pvp":
+                # for pvp players can switch roles
                 mastermind = int(input("Which player is the mastermind? [1-2]: "))
-                score  = game(mode)
+                score = game(mode)
                 if score < 0:
                     if mastermind == 1:
-                        scores["player1"] += 1
+                        scores["player1"] += 10
                     else:
-                        scores["player2"] += 1
+                        scores["player2"] += 10
                 else:
                     if mastermind == 1:
-                        scores["player2"] += 1
+                        scores["player2"] += score
                     else:
-                        scores["player1"] += 1
+                        scores["player1"] += score
             elif mode == "pvc":
                 score  = game(mode)
                 if score > 0:
-                    scores["player"] += 1
+                    scores["player"] += score
                 else:
-                    scores["cpu"] += 1
+                    scores["cpu"] += 10
             else:
                 print('Something went wrong')
                 break
@@ -88,16 +79,17 @@ def validation(rules, flavorText = 'code'):
         code = codeComma.split(" ")
 
         valid = True
-
+        # check if length of 4 colors
         if len(code) != 4:
             print("The only valid code length is 4")
             valid = False
-
+        # check if correct colors
         for pin in code:
             if pin not in rules["colors"]:
                 print("Sorry", pin, "is not a valid color")
                 valid = False
-
+        # if rules set to repeat = false, make sure there is no repeats 
+        # using count and set save to a variable and if there is at least one repeat, set valid to false
         if rules["repeat"] == False:
             check = set([x for x in code if code.count(x) > 1])
             if len(check) > 0:
@@ -109,9 +101,13 @@ def validation(rules, flavorText = 'code'):
 def cpuGenerateCode(rules):
     colors = rules["colors"]
     code = []
+    # if repeat is false, use random shuffle to chnge the order of list and then use the first 4 indices as the code
+    # this works around different number of colors since it is 4-8
     if rules["repeat"] == False:
         random.shuffle(colors)
         code = colors[:4]
+    # randomly get a number between the first color and last 
+    # append that to the return list
     else:
         for i in range(4):
             color = colors[random.randint(0,len(colors)-1)]
@@ -119,6 +115,7 @@ def cpuGenerateCode(rules):
 
     return code
 
+# Gives player options which change the game rules
 def difficulty():
     numColors = 4
     repeatColors = True
@@ -150,6 +147,7 @@ def game(mode):
     turn = 1
     board = []
     
+    # if pvp, allow players to change the rules
     if mode == "pvp":
         changeRules = input("Would you like to change the defualt rules? [y/n]: ").lower()
         if changeRules == 'n':
@@ -171,6 +169,10 @@ def game(mode):
     
     clear()
 
+    # when playing against cpu would display shuffled color which the first 4 colors were the correct code
+    random.shuffle(rules["colors"])
+
+    # game is 9 turn long
     while (turn < 10):
         print('\nTURN', turn)
         print(100*'-')
@@ -182,28 +184,40 @@ def game(mode):
 
         feedback = []
         for i in range(4):
+            # black is correct color and position
             if guessList[i] == code[i]:
                 feedback.append('black')
+            # white is correct color
             elif guessList[i] in code:
                 feedback.append('white')
+            # empty means color not in the code
             else:
                 feedback.append("empty")
-    
+
+        # if unordered feedback use random shuffle
         if rules["ordered"] == False:
             random.shuffle(feedback)
 
+        # add guess and feeback to board
         board.append((guessList, feedback))
+
+        #display game so far
         for n in range(len(board)):
             print(n+1 , ":" , board[n])
         
+        # check for continuation
         if 'white' in feedback or 'empty' in feedback:
             turn += 1
             if turn > 9:
+                print("\n The code was: ", end="")
+                print(code)
                 print("\nMastermind wins!")
-                return -1
+                return -10
+                
+        # if all black, the codebreaker wins
         else:
             print("\nCodebreaker wins!")
-            return 1
+            return 10 - turn
 
 # clears terminal
 def clear():
@@ -212,9 +226,3 @@ def clear():
 
 if __name__ == "__main__":
     main()
-
-"""
-To Do:
--change scoring 
--Add more comments
-"""
