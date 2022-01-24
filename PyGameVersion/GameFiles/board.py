@@ -101,7 +101,7 @@ class Board:
                     x = 525 if k < 2 else 575
                     y = 25 + (i * 100) + (50 * (k % 2))
                     radius = SQUARE_SIZE // 4 - 10
-                    pygame.draw.circle(win, color,  (y, x), radius)
+                    pygame.draw.circle(win, color, (y, x), radius)
     
     def draw_code(self, win, who):
         for i in range(4):

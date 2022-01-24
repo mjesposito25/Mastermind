@@ -3,13 +3,15 @@ import pygame
 
 from GameFiles.board import Board
 from GameFiles.rules import Rules
+from GameFiles.menu import Menu
 from GameFiles.constants import SQUARE_SIZE
 
 class Game:
     def __init__(self, win):
         self.win = win
         self._init()
-        self.state = 'game'
+        self.state = 'menu'
+        self.menu = Menu(self.win)
 
     def _init(self):
         self.selected = None
@@ -20,7 +22,9 @@ class Game:
     
     # display updates
     def update(self):
-        if self.state == 'game':
+        if self.state == 'menu':
+            self.menu.draw(self.win)
+        elif self.state == 'pvc':
             self.board.draw(self.win)
         pygame.display.update()
 
@@ -35,8 +39,13 @@ class Game:
     
     def game_loop(self):
         pos = pygame.mouse.get_pos()
-        row, col = self.get_row_col_from_mouse(pos)
-        self.choose_color(row, col)
+        if self.state == 'menu':
+            self.state = self.menu.button_click(pos)
+        elif self.state == 'pvc':
+            row, col = self.get_row_col_from_mouse(pos)
+            self.choose_color(row, col)
+        else:
+            self.state = 'menu'
 
     # using mouse button, set empty pin to color
     def choose_color(self, row, col):
