@@ -56,6 +56,14 @@ class Board:
         if self.game_end != None:
             self.draw_code(win, self.game_end)
 
+    # when game ends, display buttons for replay, main menu or view scores    
+    def draw_end_game(self):
+        pass
+    
+    # in a corner add a button to return to main menu
+    def draw_exit_button(self):
+        pass
+
 
     def get_pin(self, row, col):
         return self.board[row][col]

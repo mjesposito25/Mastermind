@@ -12,13 +12,18 @@ class Game:
         self._init()
         self.state = 'menu'
         self.menu = Menu(self.win)
+        self.score = { 
+            'cpu': 0,
+            'player': 0,
+            'p1': 0,
+            'p2': 0
+        }
 
     def _init(self):
         self.selected = None
         self.turn = 0
         self.num_pin = 1
         self.board = Board()
-        # self.rules = Rules()
     
     # display updates
     def update(self):
@@ -27,15 +32,6 @@ class Game:
         elif self.state == 'pvc':
             self.board.draw(self.win)
         pygame.display.update()
-
-    def winner(self):
-        pass
-
-    def main_menu(self):
-        pass
-
-    def options_menu(self):
-        pass
     
     def game_loop(self):
         pos = pygame.mouse.get_pos()
@@ -63,9 +59,11 @@ class Game:
     def next_turn(self):
         winner = self.board.give_feedback(self.turn)
         if winner:
+            self.score['player'] += (10 - self.turn)
             self.board.game_end = "Codebreaker"
             print("Codebreaker wins")
         elif self.turn == 8:
+            self.score['cpu'] += 10
             self.board.game_end = "Mastermind"
             print('Mastermind wins')
         else:
@@ -79,6 +77,9 @@ class Game:
         col = x // SQUARE_SIZE
 
         return row, col
+    
+    def reset(self):
+        self._init()
 
 
     
