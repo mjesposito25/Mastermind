@@ -39,6 +39,9 @@ class Game:
             self.state = self.menu.button_click(pos)
         elif self.state == 'pvc':
             row, col = self.get_row_col_from_mouse(pos)
+            if row == 0 and col == 9:
+                self.state = 'menu'
+                self.reset()
             self.choose_color(row, col)
         else:
             self.state = 'menu'

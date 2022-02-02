@@ -25,6 +25,7 @@ class Board:
                 elif not (row <= ROWS - 1 and col <= COLS - 2):
                     pygame.draw.rect(win, COLORS['grey'], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, COLORS['black'], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 2)
+        self.draw_exit_button(win)
     
     # creates 5 x 10 
     # maybe see if we dont need last column of zeros, as that is for code which will be stored seperately
@@ -60,9 +61,15 @@ class Board:
     def draw_end_game(self):
         pass
     
-    # in a corner add a button to return to main menu
-    def draw_exit_button(self):
-        pass
+    def draw_exit_button(self, win):
+        pygame.draw.rect(win, COLORS['yellow'], (900, 0, SQUARE_SIZE, SQUARE_SIZE))
+        pygame.draw.rect(win, COLORS['black'], (900, 0, SQUARE_SIZE, SQUARE_SIZE), 2)
+
+        font = pygame.font.SysFont(None, 45)
+        text = font.render('MENU', True, COLORS['black'])
+        text_rect = text.get_rect()
+        text_rect.center = (950, 50)
+        win.blit(text, text_rect)
 
 
     def get_pin(self, row, col):
