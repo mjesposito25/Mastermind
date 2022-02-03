@@ -42,6 +42,17 @@ class Game:
             if row == 0 and col == 9:
                 self.state = 'menu'
                 self.reset()
+            if self.board.game_end != None:
+                if (350 <= pos[0] <= 650) and (100 <= pos[1] <= 200):
+                    print('replay')
+                    self.reset()
+                elif (350 <= pos[0] <= 650) and (250 <= pos[1] <= 350):
+                    print('menu')
+                    self.state = 'menu'
+                    self.reset()
+                elif (350 <= pos[0] <= 650) and (400 <= pos[1] <= 500):
+                    print('scores')
+                    self.board.display_scores(self.score)
             self.choose_color(row, col)
         else:
             self.state = 'menu'
@@ -64,11 +75,9 @@ class Game:
         if winner:
             self.score['player'] += (10 - self.turn)
             self.board.game_end = "Codebreaker"
-            print("Codebreaker wins")
         elif self.turn == 8:
             self.score['cpu'] += 10
             self.board.game_end = "Mastermind"
-            print('Mastermind wins')
         else:
             self.turn += 1
             self.num_pin = 1

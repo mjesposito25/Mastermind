@@ -14,6 +14,14 @@ class Board:
         self.code = self._make_code()
         self.create_board()
         self.game_end = None
+        self.display_score = False
+        self.state = 'pvc'
+        self.scores = { 
+            'cpu': 0,
+            'player': 0,
+            'p1': 0,
+            'p2': 0
+        }
 
     # add black pin "holes"
     def draw_squares(self, win):
@@ -25,7 +33,6 @@ class Board:
                 elif not (row <= ROWS - 1 and col <= COLS - 2):
                     pygame.draw.rect(win, COLORS['grey'], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
                 pygame.draw.rect(win, COLORS['black'], (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 2)
-        self.draw_exit_button(win)
     
     # creates 5 x 10 
     # maybe see if we dont need last column of zeros, as that is for code which will be stored seperately
@@ -56,21 +63,24 @@ class Board:
         self.draw_feedback(win)
         if self.game_end != None:
             self.draw_code(win, self.game_end)
+            self.draw_end_game(win)
+        if self.display_score:
+            self.draw_scores(win)
+        self.draw_exit_button(win)
+ 
+    def draw_end_game(self, win):
+        textList = ['Replay', 'Menu', 'Scores']
+        for t in enumerate(textList):
+            pygame.draw.rect(win, COLORS['white'], (350, t[0] * 150 + 100, 3 * SQUARE_SIZE, SQUARE_SIZE))
+            pygame.draw.rect(win, COLORS['black'], (350, t[0] * 150 + 100, 3 * SQUARE_SIZE, SQUARE_SIZE), 2)
 
-    # when game ends, display buttons for replay, main menu or view scores    
-    def draw_end_game(self):
-        pass
+            self._write_text(win, 45, t[1], (500, t[0] * 150 + 150))
     
     def draw_exit_button(self, win):
         pygame.draw.rect(win, COLORS['yellow'], (900, 0, SQUARE_SIZE, SQUARE_SIZE))
         pygame.draw.rect(win, COLORS['black'], (900, 0, SQUARE_SIZE, SQUARE_SIZE), 2)
 
-        font = pygame.font.SysFont(None, 45)
-        text = font.render('MENU', True, COLORS['black'])
-        text_rect = text.get_rect()
-        text_rect.center = (950, 50)
-        win.blit(text, text_rect)
-
+        self._write_text(win, 45, 'MENU', (950, 50))
 
     def get_pin(self, row, col):
         return self.board[row][col]
@@ -124,12 +134,8 @@ class Board:
             color = COLORS[self.code[i]]
             pygame.draw.circle(win, COLORS['black'], (950, 150 + 100 * i), radius + 2)
             pygame.draw.circle(win, color, (950, 150 + 100 * i), radius)
-
-        font = pygame.font.SysFont(None, 100)
-        text = font.render(who + ' Wins!', True, COLORS['black'])
-        text_rect = text.get_rect()
-        text_rect.center = (500, 50)
-        win.blit(text, text_rect)
+        
+        self._write_text(win, 100, who + ' Wins!', (500, 50))
 
     def change_rules(self):
         pass
@@ -139,9 +145,28 @@ class Board:
         random.shuffle(colors)
         return colors
 
-
     def _get_key(self, val):
         for key, value in COLORS.items():
             if val == value:
                 return key
         return "No Key!"
+
+    def display_scores(self, score):
+        self.display_score = True
+        self.scores = score
+    
+    def draw_scores(self, win):
+        win.fill(COLORS['white'])
+        if self.state == 'pvc':
+            self._write_text(win, 100, 'Computer: ' + str(self.scores['cpu']), (500, 100))
+            self._write_text(win, 100, 'Player: ' + str(self.scores['player']), (500, 200))
+        else:
+            self._write_text(win, 100, 'Player 1: ' + str(self.scores['p1']), (500, 100))
+            self._write_text(win, 100, 'Player 2: ' + str(self.scores['p2']), (500, 200))
+    
+    def _write_text(self, win, font_size, text, pos):
+        font = pygame.font.SysFont(None, font_size)
+        font_ren = font.render(text, True, COLORS['black'])
+        text_rect = font_ren.get_rect()
+        text_rect.center = pos
+        win.blit(font_ren, text_rect)
