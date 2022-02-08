@@ -1,11 +1,13 @@
 import pygame
 
 from GameFiles.constants import COLORS
+from GameFiles.button import Button
 
 class Menu:
     def __init__(self, win):
         self.win = win
         self.states = ['pvc', 'pvp', 'rules', 'settings', 'quit']
+        self.buttonClass = Button(self.win, COLORS['white'], (500, 540), (300, 100), 'Quit', 100)
     
     def draw(self, win):
         win.fill(COLORS['ash'])
@@ -13,7 +15,9 @@ class Menu:
         self.button('PvP', 'white', (500, 180), win)
         self.button('Rules', 'white', (500, 300), win)
         self.button('Settings', 'white', (500, 420), win)
-        self.button('Quit', 'white', (500, 540), win)
+        #self.button('Quit', 'white', (500, 540), win)
+        self.buttonClass.draw(win)
+
 
     def button(self, text, color, coords, win):
         font = pygame.font.SysFont(None, 100)
